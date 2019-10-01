@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = "https://github.com/Azunya/react-native-dynamic-bundle/#readme"
   s.source         = { :git => 'https://github.com/Azunya/react-native-dynamic-bundle.git' }
-
+  s.platforms      = { :ios => "9.0", :tvos => "9.0" }
   s.requires_arc   = true
 
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
