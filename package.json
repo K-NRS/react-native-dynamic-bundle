@@ -2,7 +2,7 @@
   "name": "react-native-dynamic-bundle",
   "version": "0.5.1",
   "description": "Control which bundle is loaded from the Javascript side of your React Native app.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
