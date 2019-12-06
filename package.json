@@ -27,6 +27,8 @@
   },
   "nativePackage": true,
   "devDependencies": {
+    "@types/react-native": "*",
     "flow-bin": "^0.68.0"
-  }
+  },
+  "dependencies": {}
 }
