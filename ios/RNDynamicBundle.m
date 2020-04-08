@@ -14,9 +14,9 @@ static NSURL *_defaultBundleURL = nil;
 
 + (NSMutableDictionary *)loadRegistry
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths firstObject];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:kBundleRegistryStoreFilename];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    NSString *directory = [paths firstObject];
+    NSString *path = [directory stringByAppendingPathComponent:kBundleRegistryStoreFilename];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:path]) {
