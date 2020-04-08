@@ -32,9 +32,9 @@ static NSURL *_defaultBundleURL = nil;
 
 + (void)storeRegistry:(NSDictionary *)dict
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths firstObject];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:kBundleRegistryStoreFilename];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    NSString *directory = [paths firstObject];
+    NSString *path = [directory stringByAppendingPathComponent:kBundleRegistryStoreFilename];
     
     [dict writeToFile:path atomically:YES];
 }
@@ -51,9 +51,9 @@ static NSURL *_defaultBundleURL = nil;
         return _defaultBundleURL;
     }
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths firstObject];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:bundleRelativePath];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    NSString *directory = [paths firstObject];
+    NSString *path = [directory stringByAppendingPathComponent:bundleRelativePath];
     
     return [NSURL fileURLWithPath:path];
 }
@@ -98,9 +98,9 @@ static NSURL *_defaultBundleURL = nil;
     NSMutableDictionary *dict = [RNDynamicBundle loadRegistry];
     for (NSString *bundleId in dict[@"bundles"]) {
         NSString *relativePath = dict[bundleId];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths firstObject];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:relativePath];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        NSString *directory = [paths firstObject];
+        NSString *path = [directory stringByAppendingPathComponent:relativePath];
         NSURL *URL = [NSURL fileURLWithPath:path];
         
         bundles[bundleId] = [URL absoluteString];
