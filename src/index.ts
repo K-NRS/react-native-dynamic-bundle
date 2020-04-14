@@ -9,6 +9,15 @@ import { NativeModules } from 'react-native';
 const { RNDynamicBundle } = NativeModules;
 
 /**
+ * Set ths assets path for copying assets while reload bundle due to
+ * the resources cannot be loaded if it is not in the directory
+ * as same as bundle.
+ */
+export const setAssetsPath = (path: string) => {
+  RNDynamicBundle.setAssetsPath(path);
+}
+
+/**
  * Set the active Javascript bundle to the bundle with the given bundle ID in
  * the registry. This will cause the given bundle to be loaded on the next app
  * startup or invocation of `reloadBundle()`.

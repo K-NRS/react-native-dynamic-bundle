@@ -55,6 +55,13 @@ public class RNDynamicBundleModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setAssetsPath(String assetsPath) {
+    SharedPreferences.Editor editor = this.extraPrefs.edit();
+    editor.putString("assetsPath", assetsPath);
+    editor.commit();
+  }
+
+  @ReactMethod
   public void setActiveBundle(String bundleId) {
     SharedPreferences.Editor editor = this.extraPrefs.edit();
     editor.putString("activeBundle", bundleId);

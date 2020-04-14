@@ -23,6 +23,7 @@ static NSURL *_defaultBundleURL = nil;
         NSDictionary *defaults = @{
                                    @"bundles": [NSMutableDictionary dictionary],
                                    @"activeBundle": @"",
+                                   @"assetsPath": @"",
                                    };
         return [defaults mutableCopy];
     } else {
@@ -39,6 +40,49 @@ static NSURL *_defaultBundleURL = nil;
     [dict writeToFile:path atomically:YES];
 }
 
++ (NSURL *)deployBundle:(NSString *)path
+{
+    NSMutableDictionary *dict = [RNDynamicBundle loadRegistry];
+    NSString *assetsPath = dict[@"assetsPath"];
+    NSFileManager *defaultManager = [NSFileManager defaultManager];
+    if ([defaultManager isReadableFileAtPath:path] && ![assetsPath isEqualToString:@""]) {
+        NSError *error = nil;
+        NSString *fromPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:assetsPath];
+        NSString *deployPath = [[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:assetsPath];
+        [defaultManager removeItemAtPath:deployPath error:&error];
+        if (![defaultManager copyItemAtPath:fromPath toPath:deployPath error:&error]) {
+            NSLog(@"deployBundleToMainBundle copyItemAtURL: %@", error);
+        }
+//        [defaultManager createDirectoryAtPath:deployPath withIntermediateDirectories:YES attributes:nil error:NULL];
+        return [NSURL fileURLWithPath:path];
+    }
+    return _defaultBundleURL;
+}
+
++ (NSURL *)deployBundleToMainBundleV0:(NSString *)path
+{
+    NSURL *fromURL = [[NSURL alloc]initFileURLWithPath:path];
+    NSURL *toURL = [[NSURL alloc]initWithString:@"current.jsbundle" relativeToURL:[[NSBundle mainBundle] bundleURL]];
+//    NSURL *toURL = [[NSBundle mainBundle] URLForResource:@"current" withExtension:@"jsbundle"];
+    NSFileManager *defaultManager = [NSFileManager defaultManager];
+    if ([defaultManager isReadableFileAtPath:path]) {
+        NSError *error = nil;
+        if ([defaultManager fileExistsAtPath:[toURL path]]) {
+            [defaultManager removeItemAtURL:toURL error:&error];
+            if (error) {
+                NSLog(@"deployBundleToMainBundle removeItemAtURL: %@", error);
+            }
+        }
+        [defaultManager copyItemAtURL:fromURL toURL:toURL error:&error];
+        if (error) {
+            NSLog(@"deployBundleToMainBundle copyItemAtURL: %@", error);
+        }
+        return [[NSURL alloc]initWithString:@"current.jsbundle" relativeToURL:[[NSBundle mainBundle] bundleURL]];
+//        return [[NSBundle mainBundle] URLForResource:@"current" withExtension:@"jsbundle"];
+    }
+    return [NSURL fileURLWithPath:path];
+}
+
 + (NSURL *)resolveBundleURL
 {
     NSMutableDictionary *dict = [RNDynamicBundle loadRegistry];
@@ -50,12 +94,20 @@ static NSURL *_defaultBundleURL = nil;
     if (bundleRelativePath == nil) {
         return _defaultBundleURL;
     }
-    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *directory = [paths firstObject];
     NSString *path = [directory stringByAppendingPathComponent:bundleRelativePath];
     
-    return [NSURL fileURLWithPath:path];
+    return [RNDynamicBundle deployBundle:path];
+//    NSLog(@"resolveBundleURL: %@", [NSURL fileURLWithPath:path]);
+//    return [NSURL fileURLWithPath:path];
+}
+
++ (void)setAssetsPath:(NSString *)path
+{
+    NSMutableDictionary *dict = [RNDynamicBundle loadRegistry];
+    dict[@"assetsPath"] = path;
+    [RNDynamicBundle storeRegistry:dict];
 }
 
 + (void)setDefaultBundleURL:(NSURL *)URL
@@ -126,6 +178,11 @@ static NSURL *_defaultBundleURL = nil;
  * is largely a black box it would become rather brittle and unpredictable which method
  * definitions exactly to put in the header.
  */
+RCT_REMAP_METHOD(setAssetsPath, exportedSetAssetsPath:(NSString *)path)
+{
+    [RNDynamicBundle setAssetsPath:path];
+}
+
 RCT_REMAP_METHOD(reloadBundle, exportedReloadBundle)
 {
     [self reloadBundle];
